@@ -1,6 +1,6 @@
 """
-This GUI application simply loops over between 5 images when clicking << or >> button.
-An 'Exit Program' is to quite the app.
+Use the previous created image viewer application 
+to show how to create the status bar
 """
 
 from tkinter import *
@@ -19,6 +19,10 @@ my_img5 = ImageTk.PhotoImage(Image.open("images/5.jpg"))
 
 # Put the image objects in a list for indexing.
 image_list = [my_img1, my_img2, my_img3, my_img4, my_img5]
+
+# Create a label to hole the status informtion.
+# 'anchor' is to display the directional text. 'E' means right.
+status = Label(root, text="Image 1 of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
 
 # Create a 'Label' widget to hold the images,
 # will show first image when app starts.
@@ -59,6 +63,15 @@ def forward(image_num):
     button_back.grid(row=1, column=0)
     button_forward.grid(row=1, column=2)
 
+    # Add controls to make sure the correct information display on status bar,
+    # when comes to the first or the last image.
+    if image_num == -1:
+        status = Label(root, text="Image " + str(image_num+len(image_list)+1) + " of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
+        status.grid(row=2, column=0, columnspan=3, sticky=W+E)
+    else:
+        status = Label(root, text="Image " + str(image_num+1) + " of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
+        status.grid(row=2, column=0, columnspan=3, sticky=W+E)
+
 
 def back(image_num):
     """function to respond clicking on << (back) button.
@@ -85,14 +98,27 @@ def back(image_num):
     button_back.grid(row=1, column=0)
     button_forward.grid(row=1, column=2)
 
+    # Add controls to make sure the correct information display on status bar,
+    # when comes to the first or the last image.
+    if image_num == 0:
+        status = Label(root, text="Image " + str(image_num+1) + " of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
+        status.grid(row=2, column=0, columnspan=3, sticky=W+E)
+    else:
+        status = Label(root, text="Image " + str(image_num+len(image_list)+1) + " of " + str(len(image_list)), bd=1, relief=SUNKEN, anchor=E)
+        status.grid(row=2, column=0, columnspan=3, sticky=W+E)
+
 
 # Give the correct image index for the initial function call.
 button_forward = Button(root, text=">>", command=lambda: forward(1))
-button_back = Button(root, text="<<", command=lambda: back(4))
+button_back = Button(root, text="<<", command=lambda: back(-1))
 button_exit = Button(root, text="Exit Program", command=root.quit)
 
 button_back.grid(row=1, column=0)
-button_forward.grid(row=1, column=2)
+button_forward.grid(row=1, column=2, pady=10)
 button_exit.grid(row=1, column=1)
+
+# 'sticky' is to stretch the status bar to the screen.
+# 'W+E' meansstretch from West (left) to East (right).
+status.grid(row=2, column=0, columnspan=3, sticky=W+E)
 
 root.mainloop()
