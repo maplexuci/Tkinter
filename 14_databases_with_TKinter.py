@@ -140,7 +140,41 @@ def query():
     commit_and_close(conn)
 
 
+def update():
+    # Create a database or connect ot one
+    conn = create_connection("files/address_book.db")
+    # Create a cursor
+    c = create_cursor(conn)
+
+    record_id = select_box.get()
+    c.execute("""UPDATE addresses SET
+            first_name = :first,
+            last_name = :last,
+            address = :address,
+            city = :city,
+            state = :state,
+            zipcode = :zipcode
+
+            WHERE oid = :oid""",
+              {
+                'first': f_name_editor.get(),
+                'last': l_name_editor.get(),
+                'address': address_editor.get(),
+                'city': city_editor.get(),
+                'state': state_editor.get(),
+                'zipcode': zipcode_editor.get(),
+                'oid': record_id
+              })
+
+    # Commit changes and Close connection
+    commit_and_close(conn)
+
+    # Close the update window when an update is saved.
+    editor.destroy()
+
+
 def edit():
+    global editor
     editor = Tk()
     editor.title("Record Editor")
     editor.iconbitmap('images/icon.ico')
@@ -154,6 +188,14 @@ def edit():
     record_id = select_box.get()
     c.execute("SELECT * FROM addresses WHERE oid = " + record_id) 
     records = c.fetchall()
+
+    # Make text box variable names Global
+    global f_name_editor
+    global l_name_editor
+    global address_editor
+    global city_editor
+    global state_editor
+    global zipcode_editor
 
     # Create Text boxes
     f_name_editor = Entry(editor, width=30)
@@ -203,8 +245,12 @@ def edit():
         zipcode_editor.insert(0, record[5])
 
     # Create a Save Button to save edited record
-    edit_btn = Button(editor, text="Save Records", command=edit)
-    edit_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=130)
+    save_btn = Button(editor, text="Save Records", command=update)
+    save_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=130)
+
+    # Commit changes and Close connection
+    commit_and_close(conn)
+
 
 
 # Create Text boxes
