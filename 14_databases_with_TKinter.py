@@ -32,6 +32,7 @@ def create_cursor(conn):
     c = conn.cursor()
     return c
 
+
 def commit_and_close(conn):
     """ Commit changes to the database and close the database
 
@@ -69,9 +70,24 @@ address_table = """CREATE TABLE addresses(
     zipcode integer
     )
     """
+
 # Create the table which can be refered in the functions
 conn = create_connection("files/address_book.db")
 create_table(conn, address_table)
+
+
+def delete():
+    # Create a database or connect ot one
+    conn = create_connection("files/address_book.db")
+    # Create a cursor
+    c = create_cursor(conn)
+
+    # Delete a record
+    c.execute("DELETE FROM addresses WHERE oid=" + delete_box.get())
+
+    # Commit changes and Close connection
+    commit_and_close(conn)
+
 
 def submit():
     # Create a database or connect ot one
@@ -109,7 +125,7 @@ def query():
     # Create a cursor
     c = create_cursor(conn)
 
-    c.execute("SELECT *, oid FROM addresses")
+    c.execute("SELECT *, oid FROM addresses") # 'oid' will return the ID for each record in the end.
     records = c.fetchall()
     print(records)
 
@@ -118,7 +134,7 @@ def query():
         print_records += str(record) + "\n"
 
     query_label = Label(root, text=print_records)
-    query_label.grid(row=8, column=0, columnspan=2)
+    query_label.grid(row=11, column=0, columnspan=2)
 
     # Commit changes and Close connection
     commit_and_close(conn)
@@ -126,26 +142,29 @@ def query():
 
 # Create Text boxes
 f_name = Entry(root, width=30)
-f_name.grid(row=0, column=1, padx=20)
+f_name.grid(row=0, column=1, padx=20, pady=(10, 0))
 
 l_name = Entry(root, width=30)
-l_name.grid(row=1, column=1, padx=20)
+l_name.grid(row=1, column=1)
 
 address = Entry(root, width=30)
-address.grid(row=2, column=1, padx=20)
+address.grid(row=2, column=1)
 
 city = Entry(root, width=30)
-city.grid(row=3, column=1, padx=20)
+city.grid(row=3, column=1)
 
 state = Entry(root, width=30)
-state.grid(row=4, column=1, padx=20)
+state.grid(row=4, column=1)
 
 zipcode = Entry(root, width=30)
-zipcode.grid(row=5, column=1, padx=20)
+zipcode.grid(row=5, column=1)
+
+delete_box = Entry(root, width=30)
+delete_box.grid(row=8, column=1, pady=5)
 
 # Create Text Boxe Labels
 f_name_label = Label(root, text="First Name")
-f_name_label.grid(row=0, column=0)
+f_name_label.grid(row=0, column=0, pady=(10, 0))
 
 l_name_label = Label(root, text="Last Name")
 l_name_label.grid(row=1, column=0)
@@ -162,6 +181,10 @@ state_label.grid(row=4, column=0)
 zipcode_label = Label(root, text="Zipcode")
 zipcode_label.grid(row=5, column=0)
 
+delete_label = Label(root, text="Delete ID")
+delete_label.grid(row=8, column=0, pady=5)
+
+
 # Create submit Button
 submit_btn = Button(root, text="Add Record to Database", command=submit)
 submit_btn.grid(row=6, column=0, columnspan=2, padx=10, pady=10, ipadx=100)
@@ -169,6 +192,10 @@ submit_btn.grid(row=6, column=0, columnspan=2, padx=10, pady=10, ipadx=100)
 # Create a Query Button
 query_btn = Button(root, text="Query Records", command=query)
 query_btn.grid(row=7, column=0, columnspan=2, pady=10, padx=10, ipadx=125)
+
+# Create a delete Button
+delete_btn = Button(root, text="Delete Records", command=delete)
+delete_btn.grid(row=10, column=0, columnspan=2, pady=10, padx=10, ipadx=124)
 
 
 root.mainloop()
